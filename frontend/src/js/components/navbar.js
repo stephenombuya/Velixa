@@ -87,3 +87,77 @@ const attachNavbarEventListeners = () => {
             });
         }
     });
+}
+
+// Handle logout button click
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+    }
+    
+    // Handle mobile navigation toggle
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    if (navbarToggler) {
+        navbarToggler.addEventListener('click', () => {
+            document.querySelector('.navbar-menu').classList.toggle('show');
+        });
+    }
+};
+
+/**
+ * Update navbar based on authentication state
+ * @param {boolean} isAuth - Is user authenticated
+ */
+export const updateNavbarAuthState = (isAuth) => {
+    const authLinks = document.querySelectorAll('.auth-link');
+    const noAuthLinks = document.querySelectorAll('.no-auth-link');
+    
+    if (isAuth) {
+        // Show authenticated links
+        authLinks.forEach(link => link.style.display = 'block');
+        noAuthLinks.forEach(link => link.style.display = 'none');
+        
+        // Update user info in navbar
+        updateUserInfo();
+    } else {
+        // Show non-authenticated links
+        authLinks.forEach(link => link.style.display = 'none');
+        noAuthLinks.forEach(link => link.style.display = 'block');
+    }
+};
+
+/**
+ * Update user info displayed in navbar
+ */
+const updateUserInfo = () => {
+    const userInfo = getUserInfo();
+    
+    if (userInfo) {
+        const userNameElement = document.getElementById('user-name');
+        const userInitialElement = document.getElementById('user-initial');
+        
+        if (userNameElement && userInfo.name) {
+            userNameElement.textContent = userInfo.name;
+        }
+        
+        if (userInitialElement && userInfo.name) {
+            userInitialElement.textContent = userInfo.name.charAt(0).toUpperCase();
+        }
+    }
+};
+
+/**
+ * Navigate to specified page
+ * @param {string} page - Page name to navigate to
+ */
+const navigateToPage = (page) => {
+    // This will be implemented in the router
+    const navigateEvent = new CustomEvent('navigate', {
+        detail: { page }
+    });
+    
+    document.dispatchEvent(navigateEvent);
+};
