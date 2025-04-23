@@ -1,0 +1,71 @@
+<!-- File: frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ve-Lixa - Fitness Equipment</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Ve-Lixa</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for products...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <a href="cart.html" class="cart-icon"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
+                <div class="auth-buttons" id="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="register.html" class="btn btn-solid">Register</a>
+                </div>
+                <div class="user-menu hidden" id="user-menu">
+                    <span id="username"></span>
+                    <div class="dropdown">
+                        <a href="profile.html">My Profile</a>
+                        <a href="orders.html">My Orders</a>
+                        <a href="#" id="logout-btn">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Fitness Equipment for Everyone</h1>
+                <p>Quality fitness equipment at your fingertips</p>
+                <a href="products.html" class="btn btn-solid">Shop Now</a>
+            </div>
+        </section>
+
+        <section class="categories">
+            <h2>Shop by Category</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <img src="img/cardio.jpg" alt="Cardio Equipment">
+                    <h3>Cardio Equipment</h3>
+                    <a href="products.html?category=cardio" class="btn btn-outline">Explore</a>
+                </div>
+                <div class="category-card">
+                    <img src="img/strength.jpg" alt="Strength Training">
+                    <h3>Strength Training</h3>
+                    <a href="products.html?category=strength" class="btn btn-outline">Explore</a>
+                </div>
+                <div class="category-card">
+                    <img src="img/yoga.jpg" alt="Yoga & Pilates">
+                    <h3>Yoga & Pilates</h3>
+                    <a href="products.html?category=yoga" class="btn btn-outline">Explore</a>
+                </div>
+<!--             To be continued -->
