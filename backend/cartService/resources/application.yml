@@ -6,4 +6,4 @@ spring:
     name: cart-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/velixa-carts
+      uri: mongodb://localhost:27017/carts
