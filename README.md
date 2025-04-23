@@ -108,35 +108,53 @@ service-name/
 ## Frontend Structure
 
 ```
-frontend/
-├── Dockerfile                           # Frontend Docker configuration
+velixa-frontend/
 ├── public/
-│   ├── index.html                       # Main HTML file
-│   ├── favicon.ico                      # Favicon
-│   └── assets/                          # Static assets like images
+│   ├── index.html
+│   ├── favicon.ico
+│   └── assets/
+│       ├── images/
+│       │   └── logo.svg
+│       └── icons/
 ├── src/
-│   ├── index.js                         # JavaScript entry point
-│   ├── css/                             # CSS styles
-│   │   ├── main.css                     # Main stylesheet
-│   │   └── components/                  # Component-specific styles
-│   ├── js/                              # JavaScript source files
-│   │   ├── api/                         # API interaction functions
-│   │   │   ├── apiClient.js             # Base API configuration
-│   │   │   └── endpoints/               # Service-specific API calls
-│   │   ├── auth/                        # Authentication handling
-│   │   │   ├── auth.js                  # Authentication logic
-│   │   │   └── authStorage.js           # Token storage handling
-│   │   ├── components/                  # Reusable UI components
-│   │   │   └── component.js
-│   │   ├── pages/                       # Page components
+│   ├── index.js
+│   ├── css/
+│   │   ├── main.css
+│   │   └── components/
+│   │       ├── auth.css
+│   │       ├── dashboard.css
+│   │       ├── navbar.css
+│   │       └── forms.css
+│   ├── js/
+│   │   ├── api/
+│   │   │   ├── apiClient.js
+│   │   │   └── endpoints/
+│   │   │       ├── authEndpoints.js
+│   │   │       └── serviceEndpoints.js
+│   │   ├── auth/
+│   │   │   ├── auth.js
+│   │   │   └── authStorage.js
+│   │   ├── components/
+│   │   │   ├── navbar.js
+│   │   │   ├── sidebar.js
+│   │   │   ├── notification.js
+│   │   │   └── modal.js
+│   │   ├── pages/
 │   │   │   ├── home.js
 │   │   │   ├── login.js
-│   │   │   └── dashboard.js
-│   │   └── utils/                       # Utility functions
-│   └── templates/                       # HTML templates/partials
-│       └── header.html
-├── package.json                         # NPM dependencies
-└── README.md                            # Frontend documentation
+│   │   │   ├── register.js
+│   │   │   ├── dashboard.js
+│   │   │   └── profile.js
+│   │   └── utils/
+│   │       ├── validator.js
+│   │       ├── formatter.js
+│   │       └── errorHandler.js
+│   └── templates/
+│       ├── header.html
+│       ├── footer.html
+│       └── sidebar.html
+├── package.json
+└── README.md
 ```
 
 ## Development Setup
