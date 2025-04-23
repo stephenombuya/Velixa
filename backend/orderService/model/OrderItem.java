@@ -1,3 +1,4 @@
+// File: order-service/src/main/java/com/velixa/orderservice/model/OrderItem.java (continued)
 package com.velixa.orderservice.model;
 
 import java.math.BigDecimal;
@@ -37,4 +38,7 @@ public class OrderItem {
         return price;
     }
 
-    public void setPrice(BigDec
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+}
