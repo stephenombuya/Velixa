@@ -45,7 +45,7 @@ Velixa follows a microservices architecture with the following components:
 ## Project Structure
 
 ```
-velixa/
+Velixa/
 ├── docker-compose.yml                   # For orchestrating all services
 ├── README.md                            # Project documentation
 ├── backend/                             # Backend services directory
@@ -152,8 +152,8 @@ frontend/
 
 1. **Clone the repository**
    ```
-   git clone https://github.com/username/velixa.git
-   cd velixa
+   git clone https://github.com/stephenombuya/Velixa
+   cd Velixa
    ```
 
 2. **Backend Setup**
