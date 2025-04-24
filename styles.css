@@ -1,0 +1,348 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #4ae2c6 0%, #ACB6E5 100%);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+nav button {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+nav button:hover {
+    background-color: #2980b9;
+}
+
+main {
+    flex-grow: 1;
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+h2 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #34495e;
+}
+
+.form input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.btn-primary {
+    margin-top: 1.5rem;
+    background-color: #27ae60;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #219150;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #3498db;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1rem;
+    text-decoration: underline;
+}
+
+.btn-link:hover {
+    color: #2980b9;
+}
+
+.equipment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.equipment-item {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 280px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.equipment-item:hover {
+    transform: translateY(-5px);
+}
+
+.equipment-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.equipment-item h3 {
+    margin: 0.75rem 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.equipment-item p {
+    flex-grow: 1;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+}
+
+.equipment-item .price {
+    font-weight: 700;
+    margin: 0.5rem 0;
+    color: #27ae60;
+    font-size: 1.1rem;
+}
+
+.equipment-item button {
+    background-color: #e67e22;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.equipment-item button:hover {
+    background-color: #d35400;
+}
+
+#cart-items {
+    margin-top: 1rem;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+}
+
+.cart-item-name {
+    flex: 2;
+}
+
+.cart-item-quantity {
+    flex: 1;
+    text-align: center;
+}
+
+.cart-item-price {
+    flex: 1;
+    text-align: right;
+    font-weight: 600;
+    color: #27ae60;
+}
+
+.cart-item-remove {
+    flex: 0.5;
+    text-align: right;
+}
+
+.cart-item-remove button {
+    background-color: #c0392b;
+    border: none;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.cart-item-remove button:hover {
+    background-color: #922b21;
+}
+
+#cart-total {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: right;
+    color: #2c3e50;
+}
+
+#checkout-btn {
+    margin-top: 1rem;
+    background-color: #2980b9;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#checkout-btn:hover {
+    background-color: #1c5980;
+}
+
+#payment-form label {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #34495e;
+}
+
+#payment-form input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#payment-form input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+#payment-form button {
+    margin-top: 1.5rem;
+    background-color: #27ae60;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#payment-form button:hover {
+    background-color: #219150;
+}
+
+#payment-success-section p {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    color: #2c3e50;
+    text-align: center;
+}
+
+#continue-shopping-btn {
+    margin-top: 1rem;
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#continue-shopping-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .equipment-item {
+        width: calc(50% - 1rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .equipment-item {
+        width: 100%;
+    }
+    nav button {
+        margin: 0.25rem 0;
+        width: 100%;
+    }
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

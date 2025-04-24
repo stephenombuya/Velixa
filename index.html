@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title style="text-align: center;">VE-LIXA</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header>
+        <h1>VE-LIXA</h1>
+        <nav>
+            <button id="nav-register-btn">Register</button>
+            <button id="nav-login-btn">Login</button>
+            <button id="nav-browse-btn" style="display:none;">Browse Equipments</button>
+            <button id="nav-cart-btn" style="display:none;">Cart (<span id="cart-count">0</span>)</button>
+            <button id="nav-logout-btn" style="display:none;">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Registration Page -->
+        <section id="register-section" class="page">
+            <h2>Register</h2>
+            <form id="register-form" class="form">
+                <label for="register-username">Username:</label>
+                <input type="text" id="register-username" name="username" required />
+                <label for="register-password">Password:</label>
+                <input type="password" id="register-password" name="password" required />
+                <button type="submit" class="btn-primary">Register</button>
+            </form>
+            <p>Already have an account? <button id="to-login-btn" class="btn-link">Login here</button></p>
+        </section>
+
+        <!-- Login Page -->
+        <section id="login-section" class="page" style="display:none;">
+            <h2>Login</h2>
+            <form id="login-form" class="form">
+                <label for="login-username">Username:</label>
+                <input type="text" id="login-username" name="username" required />
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" name="password" required />
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p>Don't have an account? <button id="to-register-btn" class="btn-link">Register here</button></p>
+        </section>
+
+        <!-- Equipment Browsing Page -->
+        <section id="browse-section" class="page" style="display:none;">
+            <h2>Fitness Equipments</h2>
+            <div id="equipment-list" class="equipment-list">
+                <!-- Equipment items will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Cart Page -->
+        <section id="cart-section" class="page" style="display:none;">
+            <h2>Your Cart</h2>
+            <div id="cart-items">
+                <!-- Cart items will be dynamically inserted here -->
+            </div>
+            <div id="cart-total">
+                Total: $<span id="total-price">0.00</span>
+            </div>
+            <button id="checkout-btn" class="btn-primary">Proceed to Payment</button>
+        </section>
+
+        <!-- Payment Page -->
+        <section id="payment-section" class="page" style="display:none;">
+            <h2>Payment</h2>
+            <form id="payment-form" class="form">
+                <label for="card-number">Card Number:</label>
+                <input type="text" id="card-number" name="cardNumber" required pattern="\\d{16}" maxlength="16" />
+                <label for="expiry-date">Expiry Date (MM/YY):</label>
+                <input type="text" id="expiry-date" name="expiryDate" required pattern="(0[1-9]|1[0-2])\\/\\d{2}" maxlength="5" />
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv" required pattern="\\d{3}" maxlength="3" />
+                <button type="submit" class="btn-primary">Pay</button>
+            </form>
+        </section>
+
+        <!-- Payment Success Page -->
+        <section id="payment-success-section" class="page" style="display:none;">
+            <h2>Payment Successful!</h2>
+            <p>Thank you for your purchase.</p>
+            <button id="continue-shopping-btn" class="btn-primary">Continue Shopping</button>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
