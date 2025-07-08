@@ -2,7 +2,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #4ae2c6 0%, #ACB6E5 100%);
+    background: linear-gradient(135deg, #f8fafa 0%, #f9f9fc 100%);
     color: #333;
     min-height: 100vh;
     display: flex;
@@ -10,7 +10,7 @@ body {
 }
 
 header {
-    background-color: #2c3e50;
+    background-color: #585b5e;
     color: white;
     padding: 1rem 2rem;
     display: flex;
@@ -25,9 +25,9 @@ header h1 {
 }
 
 nav button {
-    background-color: #3498db;
+    background-color: #c5c5ce;
     border: none;
-    color: white;
+    color: rgb(71, 65, 65);
     padding: 0.5rem 1rem;
     margin-left: 0.5rem;
     cursor: pointer;
@@ -37,7 +37,7 @@ nav button {
 }
 
 nav button:hover {
-    background-color: #2980b9;
+    background-color: #616e77;
 }
 
 main {
@@ -88,7 +88,7 @@ h2 {
 }
 
 .form input:focus {
-    border-color: #3498db;
+    border-color: #4c6474;
     outline: none;
 }
 
@@ -174,7 +174,7 @@ h2 {
 }
 
 .equipment-item button {
-    background-color: #e67e22;
+    background-color: #7c726a;
     border: none;
     color: white;
     padding: 0.5rem 1rem;
@@ -186,7 +186,7 @@ h2 {
 }
 
 .equipment-item button:hover {
-    background-color: #d35400;
+    background-color: #4b4846;
 }
 
 #cart-items {
@@ -224,7 +224,7 @@ h2 {
 }
 
 .cart-item-remove button {
-    background-color: #c0392b;
+    background-color: #796f6d;
     border: none;
     color: white;
     padding: 0.25rem 0.5rem;
@@ -235,7 +235,7 @@ h2 {
 }
 
 .cart-item-remove button:hover {
-    background-color: #922b21;
+    background-color: #2e2524;
 }
 
 #cart-total {
