@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – Velixa</title>
+  <link rel="stylesheet" href="../src/css/main.css" />
+  <link rel="stylesheet" href="../src/css/components/dashboard.css" />
+  <style>
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--sp-6);
+      align-items: start;
+    }
+    .profile-avatar-card {
+      background: var(--clr-bg-raised);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--r-lg);
+      padding: var(--sp-6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--sp-4);
+    }
+    .profile-avatar-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+    .profile-avatar-change {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 28px; height: 28px;
+      background: var(--clr-brand);
+      border: 2px solid var(--clr-bg-raised);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      color: #fff;
+    }
+    .profile-avatar-change:hover { background: var(--clr-brand-dark); }
+    .profile-full-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--clr-text);
+    }
+    .profile-username {
+      font-size: 0.85rem;
+      color: var(--clr-text-faint);
+    }
+    .profile-joined {
+      font-size: 0.78rem;
+      color: var(--clr-text-faint);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+    .tab-list {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--clr-border);
+      margin-bottom: var(--sp-6);
+    }
+    .tab-btn {
+      padding: 0.6rem 1.1rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--clr-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--clr-text); }
+    .tab-btn.active {
+      color: var(--clr-brand-light);
+      border-bottom-color: var(--clr-brand);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+    @media (max-width: 768px) {
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <header class="topbar" id="topbar"></header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Profile</h1>
+        <p class="page-subtitle">Manage your personal information and security.</p>
+      </div>
+    </div>
+
+    <div class="profile-grid" id="profileContent">
+      <!-- Skeleton -->
+      <div class="card"><div class="skeleton" style="height:260px;border-radius:8px"></div></div>
+      <div class="card"><div class="skeleton" style="height:300px;border-radius:8px"></div></div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { initShell } from '../src/js/components/navbar.js';
+  import { getUser, setUser } from '../src/js/auth/authStorage.js';
+  import { updateProfile, changePassword, getProfile } from '../src/js/auth/auth.js';
+  import { showNotification } from '../src/js/components/notification.js';
+  import { validateForm, rules } from '../src/js/utils/validator.js';
+  import { initials, formatDate, userColorFromId } from '../src/js/utils/formatter.js';
+
+  initShell();
+
+  let user = getUser();
+
+  async function loadProfile() {
+    try {
+      user = await getProfile();
+    } catch {}
+    renderProfile();
+  }
+
+  function avatarBg(id) {
+    const colours = ['#6c63ff','#ec4899','#f59e0b','#10b981','#3b82f6','#8b5cf6'];
+    let hash = 0;
+    for (let i = 0; i < (id||'').length; i++) hash = (id||'').charCodeAt(i) + ((hash << 5) - hash);
+    return colours[Math.abs(hash) % colours.length];
+  }
+
+  function renderProfile() {
+    if (!user) return;
+    const bg = avatarBg(user.id);
+    const container = document.getElementById('profileContent');
+    container.innerHTML = `
+      <!-- Avatar card -->
+      <div class="profile-avatar-card">
+        <div class="profile-avatar-wrap">
+          <div class="avatar avatar-xl" style="background:${bg};color:#fff;font-size:1.6rem;border:3px solid var(--clr-border)">
+            ${user.avatarUrl
+              ? `<img src="${user.avatarUrl}" alt="${user.firstName}" />`
+              : initials(`${user.firstName || ''} ${user.lastName || ''}`)}
+          </div>
+          <div class="profile-avatar-change" title="Change avatar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="profile-full-name">${user.firstName} ${user.lastName}</div>
+          <div class="profile-username">@${user.username}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-2);width:100%;text-align:left">
+          <div class="profile-joined">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Joined ${formatDate(user.createdAt)}
+          </div>
+          ${user.lastLoginAt ? `<div class="profile-joined">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Last login ${formatDate(user.lastLoginAt)}
+          </div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-2);width:100%">
+          ${(user.roles || []).map(r =>
+            `<span class="badge badge-${r === 'ROLE_ADMIN' ? 'owner' : 'brand'}" style="justify-content:center">${r.replace('ROLE_','')}</span>`
+          ).join('')}
+        </div>
+      </div>
+
+      <!-- Right panel with tabs -->
+      <div class="card">
+        <div class="tab-list">
+          <button class="tab-btn active" data-tab="info">Personal Info</button>
+          <button class="tab-btn" data-tab="security">Security</button>
+        </div>
+
+        <!-- Personal Info Tab -->
+        <div class="tab-panel active" id="tab-info">
+          <form id="profileForm" novalidate style="display:flex;flex-direction:column;gap:var(--sp-4);max-width:500px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4)">
+              <div class="form-group">
+                <label class="form-label">First name</label>
+                <input type="text" id="pFirstName" class="form-input" value="${user.firstName || ''}" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last name</label>
+                <input type="text" id="pLastName" class="form-input" value="${user.lastName || ''}" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email address</label>
+              <input type="email" class="form-input" value="${user.email || ''}" disabled
+                     style="opacity:0.5;cursor:not-allowed" />
+              <span class="form-hint">Email cannot be changed.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-input" value="${user.username || ''}" disabled
+                     style="opacity:0.5;cursor:not-allowed" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Avatar URL <span style="color:var(--clr-text-faint)">(optional)</span></label>
+              <input type="url" id="pAvatarUrl" class="form-input"
+                     placeholder="https://example.com/avatar.jpg"
+                     value="${user.avatarUrl || ''}" />
+            </div>
+            <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save changes</button>
+          </form>
+        </div>
+
+        <!-- Security Tab -->
+        <div class="tab-panel" id="tab-security">
+          <form id="passwordForm" novalidate style="display:flex;flex-direction:column;gap:var(--sp-4);max-width:400px">
+            <h3 style="font-size:1rem;font-weight:600;margin-bottom:var(--sp-2)">Change Password</h3>
+            <div class="form-group">
+              <label class="form-label">Current password</label>
+              <input type="password" id="secCurrentPwd" class="form-input" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">New password</label>
+              <input type="password" id="secNewPwd" class="form-input" placeholder="Min. 8 characters" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm new password</label>
+              <input type="password" id="secConfirmPwd" class="form-input" placeholder="Repeat new password" />
+            </div>
+            <div id="pwdError" class="field-error" style="display:none;padding:var(--sp-3);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r-md)"></div>
+            <button type="submit" class="btn btn-primary" id="changePwdBtn">Update password</button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    // Wire tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // Profile form submit
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const schema = {
+        firstName: { el: document.getElementById('pFirstName'), rules: [rules.required] },
+        lastName:  { el: document.getElementById('pLastName'),  rules: [rules.required] },
+      };
+      const { valid } = validateForm(schema);
+      if (!valid) return;
+
+      const btn = document.getElementById('saveProfileBtn');
+      btn.classList.add('btn-loading');
+      btn.textContent = 'Saving';
+      try {
+        user = await updateProfile({
+          firstName:  document.getElementById('pFirstName').value.trim(),
+          lastName:   document.getElementById('pLastName').value.trim(),
+          avatarUrl:  document.getElementById('pAvatarUrl').value.trim() || null,
+        });
+        showNotification('Profile updated!', 'success');
+        renderProfile(); // re-render with new data
+      } catch (err) {
+        showNotification(err.message || 'Failed to update profile.', 'error');
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.textContent = 'Save changes';
+      }
+    });
+
+    // Password form
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwdError = document.getElementById('pwdError');
+      pwdError.style.display = 'none';
+
+      const newPwd     = document.getElementById('secNewPwd').value;
+      const confirmPwd = document.getElementById('secConfirmPwd').value;
+
+      const schema = {
+        current: { el: document.getElementById('secCurrentPwd'), rules: [rules.required] },
+        newPwd:  { el: document.getElementById('secNewPwd'), rules: [rules.required, rules.minLen(8)] },
+        confirm: { el: document.getElementById('secConfirmPwd'), rules: [rules.required, rules.match(newPwd, 'new password')] },
+      };
+      const { valid } = validateForm(schema);
+      if (!valid) return;
+
+      const btn = document.getElementById('changePwdBtn');
+      btn.classList.add('btn-loading');
+      btn.textContent = 'Updating';
+      try {
+        await changePassword(
+          document.getElementById('secCurrentPwd').value,
+          newPwd
+        );
+        showNotification('Password changed successfully!', 'success');
+        document.getElementById('passwordForm').reset();
+      } catch (err) {
+        pwdError.textContent = err.message || 'Failed to change password.';
+        pwdError.style.display = 'block';
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.textContent = 'Update password';
+      }
+    });
+  }
+
+  // Need validateForm + rules from here
+  const { validateForm, rules } = await import('../src/js/utils/validator.js');
+
+  loadProfile();
+</script>
+
+</body>
+</html>

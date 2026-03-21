@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspaces – Velixa</title>
+  <link rel="stylesheet" href="../src/css/main.css" />
+  <link rel="stylesheet" href="../src/css/components/dashboard.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <header class="topbar" id="topbar"></header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Workspaces</h1>
+        <p class="page-subtitle">Manage your teams and collaborative spaces.</p>
+      </div>
+      <button class="btn btn-primary" id="createBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Workspace
+      </button>
+    </div>
+
+    <!-- Filter bar -->
+    <div style="display:flex;gap:var(--sp-3);margin-bottom:var(--sp-6);flex-wrap:wrap;align-items:center">
+      <div class="input-wrapper" style="max-width:280px;flex:1">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="search" class="form-input" id="searchInput" placeholder="Search workspaces…" />
+      </div>
+      <select class="form-input" id="visibilityFilter" style="max-width:160px">
+        <option value="">All visibility</option>
+        <option value="PUBLIC">Public</option>
+        <option value="PRIVATE">Private</option>
+        <option value="INTERNAL">Internal</option>
+      </select>
+    </div>
+
+    <!-- Workspace grid -->
+    <div id="workspaceGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--sp-5)">
+      <!-- skeleton -->
+      <div class="card"><div class="skeleton" style="height:140px;border-radius:8px"></div></div>
+      <div class="card"><div class="skeleton" style="height:140px;border-radius:8px"></div></div>
+      <div class="card"><div class="skeleton" style="height:140px;border-radius:8px"></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ── Create Workspace Modal ── -->
+<div class="modal-backdrop hidden" id="createModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Create Workspace</span>
+      <button class="modal-close" id="closeModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="createForm" novalidate style="display:flex;flex-direction:column;gap:var(--sp-4)">
+
+        <div class="form-group">
+          <label class="form-label">Workspace name</label>
+          <input type="text" id="wsName" class="form-input" placeholder="e.g. Engineering Team" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Slug</label>
+          <div class="input-wrapper">
+            <span style="position:absolute;left:0.85rem;font-size:0.85rem;color:var(--clr-text-faint);pointer-events:none">/</span>
+            <input type="text" id="wsSlug" class="form-input" placeholder="engineering-team"
+                   style="padding-left:1.4rem" />
+          </div>
+          <span class="form-hint">Unique identifier — lowercase letters, numbers, hyphens</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span style="color:var(--clr-text-faint)">(optional)</span></label>
+          <textarea id="wsDesc" class="form-input" rows="3"
+                    placeholder="What does this workspace do?" style="resize:vertical"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Visibility</label>
+          <select id="wsVisibility" class="form-input">
+            <option value="PRIVATE">🔒 Private — only invited members</option>
+            <option value="INTERNAL">🏢 Internal — all team members</option>
+            <option value="PUBLIC">🌍 Public — anyone can view</option>
+          </select>
+        </div>
+
+        <div id="createError" class="field-error" style="display:none;padding:var(--sp-3);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r-md)"></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+      <button class="btn btn-primary" id="submitCreate">Create workspace</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initShell } from '../src/js/components/navbar.js';
+  import { workspaceApi } from '../src/js/api/endpoints/workspaceEndpoints.js';
+  import { showNotification } from '../src/js/components/notification.js';
+  import { validateForm, rules } from '../src/js/utils/validator.js';
+  import { slugify, initials, timeAgo } from '../src/js/utils/formatter.js';
+
+  initShell();
+
+  let allWorkspaces = [];
+
+  // ── Load workspaces ──────────────────────────────────────
+  async function loadWorkspaces() {
+    try {
+      allWorkspaces = await workspaceApi.list();
+      renderGrid(allWorkspaces);
+    } catch (err) {
+      showNotification('Failed to load workspaces.', 'error');
+      document.getElementById('workspaceGrid').innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-state-icon">⚠️</div>
+          <h3>Failed to load workspaces</h3>
+        </div>`;
+    }
+  }
+
+  function renderGrid(workspaces) {
+    const grid = document.getElementById('workspaceGrid');
+    if (!workspaces.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;padding:var(--sp-16)">
+          <div class="empty-state-icon">🏢</div>
+          <h3>No workspaces found</h3>
+          <p class="text-sm text-muted">Create your first workspace to get started.</p>
+          <button class="btn btn-primary" onclick="document.getElementById('createBtn').click()">
+            Create workspace
+          </button>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = workspaces.map(w => {
+      const roleClass = (w.currentUserRole || 'VIEWER').toLowerCase();
+      return `
+        <a href="workspace-detail.html?id=${w.id}" class="workspace-card">
+          <div class="workspace-card-top">
+            <div style="display:flex;align-items:center;gap:var(--sp-3)">
+              <div class="workspace-logo">${initials(w.name)}</div>
+              <div>
+                <div class="workspace-name">${w.name}</div>
+                <div class="workspace-slug">/${w.slug}</div>
+              </div>
+            </div>
+            <span class="badge badge-${roleClass}">${w.currentUserRole || 'VIEWER'}</span>
+          </div>
+          ${w.description ? `<p class="workspace-desc">${w.description}</p>` : ''}
+          <div class="workspace-meta">
+            <div style="display:flex;align-items:center;gap:var(--sp-2)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--clr-text-faint)">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span style="font-size:0.78rem;color:var(--clr-text-faint)">${w.memberCount} member${w.memberCount !== 1 ? 's' : ''}</span>
+            </div>
+            <span class="badge badge-${w.visibility === 'PUBLIC' ? 'success' : w.visibility === 'INTERNAL' ? 'warning' : 'muted'}" style="font-size:0.65rem">
+              ${w.visibility}
+            </span>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  // ── Search & filter ─────────────────────────────────────
+  function applyFilters() {
+    const q    = document.getElementById('searchInput').value.toLowerCase();
+    const vis  = document.getElementById('visibilityFilter').value;
+    renderGrid(allWorkspaces.filter(w =>
+      (!q   || w.name.toLowerCase().includes(q) || w.slug.includes(q)) &&
+      (!vis || w.visibility === vis)
+    ));
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('visibilityFilter').addEventListener('change', applyFilters);
+
+  // ── Modal open/close ─────────────────────────────────────
+  const modal = document.getElementById('createModal');
+
+  document.getElementById('createBtn').addEventListener('click', () => {
+    modal.classList.remove('hidden');
+  });
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('cancelModal').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    document.getElementById('createForm').reset();
+    document.getElementById('createError').style.display = 'none';
+  }
+
+  // Auto-slug from name
+  document.getElementById('wsName').addEventListener('input', (e) => {
+    document.getElementById('wsSlug').value = slugify(e.target.value);
+  });
+
+  // ── Create submit ────────────────────────────────────────
+  document.getElementById('submitCreate').addEventListener('click', async () => {
+    const errBox = document.getElementById('createError');
+    errBox.style.display = 'none';
+
+    const schema = {
+      name: { el: document.getElementById('wsName'), rules: [rules.required, rules.minLen(2)] },
+      slug: { el: document.getElementById('wsSlug'), rules: [rules.required, rules.slug, rules.minLen(2)] },
+    };
+    const { valid } = validateForm(schema);
+    if (!valid) return;
+
+    const btn = document.getElementById('submitCreate');
+    btn.classList.add('btn-loading');
+    btn.textContent = 'Creating';
+
+    try {
+      const ws = await workspaceApi.create({
+        name:       document.getElementById('wsName').value.trim(),
+        slug:       document.getElementById('wsSlug').value.trim(),
+        description: document.getElementById('wsDesc').value.trim() || null,
+        visibility: document.getElementById('wsVisibility').value,
+      });
+      showNotification(`Workspace "${ws.name}" created!`, 'success');
+      closeModal();
+      loadWorkspaces();
+    } catch (err) {
+      errBox.textContent = err.message || 'Failed to create workspace.';
+      errBox.style.display = 'block';
+    } finally {
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Create workspace';
+    }
+  });
+
+  loadWorkspaces();
+</script>
+
+</body>
+</html>

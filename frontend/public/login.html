@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In – Velixa</title>
+  <link rel="stylesheet" href="../src/css/main.css" />
+  <link rel="stylesheet" href="../src/css/components/auth.css" />
+</head>
+<body>
+
+<main class="auth-page">
+
+  <!-- ── Brand Panel ── -->
+  <section class="auth-brand">
+    <div class="auth-brand-logo">
+      <div class="auth-brand-logo-mark">V</div>
+      <span class="auth-brand-name">Velixa</span>
+    </div>
+
+    <div class="auth-brand-content">
+      <h1 class="auth-brand-tagline">
+        Where teams<br/><span>move faster</span><br/>together.
+      </h1>
+      <p class="auth-brand-sub">
+        Unified workspaces, real-time collaboration, and a full activity history —
+        so nothing falls through the cracks.
+      </p>
+      <div class="auth-brand-features">
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          Role-based workspace membership
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          Live activity feed &amp; audit log
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          JWT auth with automatic token refresh
+        </div>
+      </div>
+    </div>
+
+    <p class="auth-brand-footer">© 2025 Velixa. All rights reserved.</p>
+  </section>
+
+  <!-- ── Form Panel ── -->
+  <section class="auth-form-panel">
+    <div class="auth-form-container">
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">Welcome back</h2>
+        <p class="auth-form-subtitle">Sign in to your workspace</p>
+      </div>
+
+      <form class="auth-form" id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="email" id="email" class="form-input"
+                   placeholder="you@company.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="password" class="form-input"
+                   placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="input-action" id="togglePassword" aria-label="Toggle password">
+              <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="loginError" class="field-error" style="display:none;text-align:center;font-size:0.85rem;padding:var(--sp-3);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r-md)"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="loginBtn">
+          Sign in
+        </button>
+      </form>
+
+      <div class="auth-form-footer">
+        Don't have an account? <a href="register.html">Create one free</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { login, redirectIfAuthenticated } from '../src/js/auth/auth.js';
+  import { validateForm, rules } from '../src/js/utils/validator.js';
+
+  redirectIfAuthenticated();
+
+  const form     = document.getElementById('loginForm');
+  const btn      = document.getElementById('loginBtn');
+  const errorBox = document.getElementById('loginError');
+  const toggle   = document.getElementById('togglePassword');
+  const pwdInput = document.getElementById('password');
+
+  // Toggle password visibility
+  toggle.addEventListener('click', () => {
+    const isText = pwdInput.type === 'text';
+    pwdInput.type = isText ? 'password' : 'text';
+    toggle.innerHTML = isText
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+
+    const schema = {
+      email:    { el: document.getElementById('email'),    rules: [rules.required, rules.email] },
+      password: { el: document.getElementById('password'), rules: [rules.required] },
+    };
+
+    const { valid } = validateForm(schema);
+    if (!valid) return;
+
+    btn.classList.add('btn-loading');
+    btn.textContent = 'Signing in';
+
+    try {
+      await login(
+        document.getElementById('email').value.trim(),
+        document.getElementById('password').value
+      );
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      errorBox.textContent = err.message || 'Invalid email or password.';
+      errorBox.style.display = 'block';
+    } finally {
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Sign in';
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Velixa</title>
+  <link rel="stylesheet" href="../src/css/main.css" />
+  <link rel="stylesheet" href="../src/css/components/dashboard.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <header class="topbar" id="topbar"></header>
+
+  <main class="main-content" id="mainContent">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title" id="greeting">Good morning 👋</h1>
+        <p class="page-subtitle">Here's what's happening across your workspaces.</p>
+      </div>
+      <a href="workspaces.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Workspace
+      </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px"></div></div>
+    </div>
+
+    <div class="content-grid-2">
+
+      <!-- Recent Workspaces -->
+      <div class="card">
+        <div class="section-header">
+          <h3 class="section-title">Recent Workspaces</h3>
+          <a href="workspaces.html" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        <div id="recentWorkspaces">
+          <div class="skeleton" style="height:72px;border-radius:10px;margin-bottom:10px"></div>
+          <div class="skeleton" style="height:72px;border-radius:10px;margin-bottom:10px"></div>
+          <div class="skeleton" style="height:72px;border-radius:10px"></div>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="card">
+        <div class="section-header">
+          <h3 class="section-title">Recent Activity</h3>
+          <a href="activity.html" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        <div id="activityFeed" class="activity-feed">
+          <div class="skeleton" style="height:52px;border-radius:8px;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:52px;border-radius:8px;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:52px;border-radius:8px;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:52px;border-radius:8px"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script type="module">
+  import { initShell } from '../src/js/components/navbar.js';
+  import { getUser } from '../src/js/auth/authStorage.js';
+  import { workspaceApi } from '../src/js/api/endpoints/workspaceEndpoints.js';
+  import api from '../src/js/api/apiClient.js';
+  import { timeAgo, initials, formatActivityType } from '../src/js/utils/formatter.js';
+  import { showNotification } from '../src/js/components/notification.js';
+
+  initShell();
+
+  // Greeting
+  const hour = new Date().getHours();
+  const user = getUser();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent =
+    `${greet}, ${user?.firstName || 'there'} 👋`;
+
+  async function loadDashboard() {
+    await Promise.allSettled([loadWorkspaces(), loadActivity()]);
+  }
+
+  async function loadWorkspaces() {
+    try {
+      const workspaces = await workspaceApi.list();
+      renderStats(workspaces);
+      renderRecentWorkspaces(workspaces.slice(0, 3));
+    } catch (err) {
+      showNotification('Could not load workspaces.', 'error');
+      document.getElementById('recentWorkspaces').innerHTML = emptyState('No workspaces yet', 'Create one to get started');
+    }
+  }
+
+  async function loadActivity() {
+    try {
+      // Load from first available workspace
+      const workspaces = await workspaceApi.list().catch(() => []);
+      if (!workspaces.length) {
+        renderActivityFeed([]);
+        return;
+      }
+      const { content } = await api.get(`/activities/workspace/${workspaces[0].id}?page=0&size=6`);
+      renderActivityFeed(content || []);
+    } catch {
+      renderActivityFeed([]);
+    }
+  }
+
+  function renderStats(workspaces) {
+    const totalMembers = workspaces.reduce((acc, w) => acc + (w.memberCount || 0), 0);
+    const statsGrid = document.getElementById('statsGrid');
+    statsGrid.innerHTML = `
+      ${statCard('🏢', workspaces.length, 'Workspaces', '--clr-brand', 'rgba(108,99,255,0.12)')}
+      ${statCard('👥', totalMembers, 'Total Members', '--clr-info', 'rgba(96,165,250,0.12)')}
+      ${statCard('⚡', '—', 'Events Today', '--clr-success', 'rgba(52,211,153,0.12)')}
+      ${statCard('🔐', 'Active', 'Account Status', '--clr-success', 'rgba(52,211,153,0.12)')}
+    `;
+  }
+
+  function statCard(icon, value, label, color, bg) {
+    return `
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:${bg};font-size:1.1rem">${icon}</div>
+        <div>
+          <div class="stat-card-value" style="color:var(${color})">${value}</div>
+          <div class="stat-card-label">${label}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderRecentWorkspaces(workspaces) {
+    const el = document.getElementById('recentWorkspaces');
+    if (!workspaces.length) {
+      el.innerHTML = `
+        <div class="empty-state" style="padding:var(--sp-8)">
+          <div class="empty-state-icon">🏢</div>
+          <h3>No workspaces yet</h3>
+          <a href="workspaces.html" class="btn btn-primary btn-sm">Create workspace</a>
+        </div>`;
+      return;
+    }
+    el.innerHTML = workspaces.map(w => `
+      <a href="workspace-detail.html?id=${w.id}" class="workspace-card" style="margin-bottom:var(--sp-3);flex-direction:row;align-items:center;gap:var(--sp-3)">
+        <div class="workspace-logo" style="width:40px;height:40px;font-size:0.9rem;flex-shrink:0">
+          ${initials(w.name)}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="workspace-name" style="font-size:0.9rem">${w.name}</div>
+          <div class="workspace-slug">/${w.slug} · ${w.memberCount} member${w.memberCount !== 1 ? 's' : ''}</div>
+        </div>
+        <span class="badge badge-${w.visibility === 'PUBLIC' ? 'success' : 'muted'}">${w.visibility}</span>
+      </a>
+    `).join('');
+  }
+
+  function renderActivityFeed(activities) {
+    const el = document.getElementById('activityFeed');
+    if (!activities.length) {
+      el.innerHTML = `<div class="empty-state" style="padding:var(--sp-8)">
+        <div class="empty-state-icon">⚡</div>
+        <h3>No activity yet</h3>
+        <p class="text-sm" style="color:var(--clr-text-faint)">Events will appear here as your team works.</p>
+      </div>`;
+      return;
+    }
+    el.innerHTML = activities.map(a => `
+      <div class="activity-item">
+        <div class="activity-icon" title="${a.type}">${activityEmoji(a.type)}</div>
+        <div class="activity-body">
+          <div class="activity-text">
+            <strong>${a.actorUsername || 'Someone'}</strong>
+            ${formatActivityType(a.type).toLowerCase()}
+            ${a.resourceName ? `<strong>${a.resourceName}</strong>` : ''}
+          </div>
+          <div class="activity-time">${timeAgo(a.createdAt)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function activityEmoji(type) {
+    const map = {
+      WORKSPACE_CREATED: '🏢', WORKSPACE_UPDATED: '✏️', WORKSPACE_DELETED: '🗑️',
+      MEMBER_INVITED: '👋', MEMBER_REMOVED: '👤', MEMBER_ROLE_UPDATED: '🔑',
+      RESOURCE_CREATED: '📄', RESOURCE_UPDATED: '✏️', RESOURCE_DELETED: '🗑️',
+      USER_LOGGED_IN: '🔐', USER_PROFILE_UPDATED: '👤',
+    };
+    return map[type] || '⚡';
+  }
+
+  function emptyState(title, subtitle) {
+    return `<div class="empty-state" style="padding:var(--sp-8)">
+      <div class="empty-state-icon">✨</div>
+      <h3>${title}</h3>
+      <p class="text-sm" style="color:var(--clr-text-faint)">${subtitle}</p>
+    </div>`;
+  }
+
+  loadDashboard();
+</script>
+
+</body>
+</html>

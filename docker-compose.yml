@@ -1,0 +1,222 @@
+version: '3.9'
+
+networks:
+  velixa-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+  redis-data:
+
+services:
+
+  # ─── Infrastructure ───────────────────────────────────────────────────────────
+
+  mongodb:
+    image: mongo:7.0
+    container_name: velixa-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: velixa
+      MONGO_INITDB_ROOT_PASSWORD: velixa_secret
+      MONGO_INITDB_DATABASE: velixadb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: velixa-redis
+    restart: unless-stopped
+    command: redis-server --requirepass velixa_redis_secret
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "velixa_redis_secret", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─── Service Registry ─────────────────────────────────────────────────────────
+
+  service-registry:
+    build:
+      context: ./backend/service-registry
+      dockerfile: Dockerfile
+    container_name: velixa-service-registry
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Config Server ────────────────────────────────────────────────────────────
+
+  config-server:
+    build:
+      context: ./backend/config-server
+      dockerfile: Dockerfile
+    container_name: velixa-config-server
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Auth Service ─────────────────────────────────────────────────────────────
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: velixa-auth-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://velixa:velixa_secret@mongodb:27017/velixadb?authSource=admin
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: velixa_redis_secret
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET:-5a6f77e49be342c8a12b38d91f2c9e6b3d4a5e7f8c1b2d3e4f5a6b7c8d9e0f1a2}
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Workspace Service ────────────────────────────────────────────────────────
+
+  workspace-service:
+    build:
+      context: ./backend/workspace-service
+      dockerfile: Dockerfile
+    container_name: velixa-workspace-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://velixa:velixa_secret@mongodb:27017/velixadb?authSource=admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET:-5a6f77e49be342c8a12b38d91f2c9e6b3d4a5e7f8c1b2d3e4f5a6b7c8d9e0f1a2}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Activity Service ─────────────────────────────────────────────────────────
+
+  activity-service:
+    build:
+      context: ./backend/activity-service
+      dockerfile: Dockerfile
+    container_name: velixa-activity-service
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://velixa:velixa_secret@mongodb:27017/velixadb?authSource=admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET:-5a6f77e49be342c8a12b38d91f2c9e6b3d4a5e7f8c1b2d3e4f5a6b7c8d9e0f1a2}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    networks:
+      - velixa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── API Gateway ──────────────────────────────────────────────────────────────
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: velixa-api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET:-5a6f77e49be342c8a12b38d91f2c9e6b3d4a5e7f8c1b2d3e4f5a6b7c8d9e0f1a2}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: velixa_redis_secret
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      workspace-service:
+        condition: service_healthy
+      activity-service:
+        condition: service_healthy
+    networks:
+      - velixa-network
+
+  # ─── Frontend ─────────────────────────────────────────────────────────────────
+
+  frontend:
+    image: nginx:alpine
+    container_name: velixa-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend/public:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api-gateway
+    networks:
+      - velixa-network

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account – Velixa</title>
+  <link rel="stylesheet" href="../src/css/main.css" />
+  <link rel="stylesheet" href="../src/css/components/auth.css" />
+</head>
+<body>
+
+<main class="auth-page">
+
+  <!-- ── Brand Panel ── -->
+  <section class="auth-brand">
+    <div class="auth-brand-logo">
+      <div class="auth-brand-logo-mark">V</div>
+      <span class="auth-brand-name">Velixa</span>
+    </div>
+
+    <div class="auth-brand-content">
+      <h1 class="auth-brand-tagline">
+        Build your<br/><span>team's home</span><br/>in seconds.
+      </h1>
+      <p class="auth-brand-sub">
+        Create unlimited workspaces, invite your team, and start collaborating 
+        with a fully audited, secure platform built for production teams.
+      </p>
+      <div class="auth-brand-features">
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          Set up in under 2 minutes
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          Free to start, scales with your team
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          Enterprise-grade security from day one
+        </div>
+      </div>
+    </div>
+
+    <p class="auth-brand-footer">© 2025 Velixa. All rights reserved.</p>
+  </section>
+
+  <!-- ── Form Panel ── -->
+  <section class="auth-form-panel">
+    <div class="auth-form-container">
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">Create your account</h2>
+        <p class="auth-form-subtitle">Free forever. No credit card required.</p>
+      </div>
+
+      <form class="auth-form" id="registerForm" novalidate>
+
+        <div class="auth-form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First name</label>
+            <input type="text" id="firstName" class="form-input"
+                   placeholder="John" autocomplete="given-name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last name</label>
+            <input type="text" id="lastName" class="form-input"
+                   placeholder="Doe" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" id="username" class="form-input"
+                   placeholder="johndoe" autocomplete="username" />
+          </div>
+          <span class="form-hint">3–30 characters, letters and numbers only</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Work email</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="email" id="email" class="form-input"
+                   placeholder="you@company.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="password" class="form-input"
+                   placeholder="Min. 8 characters" autocomplete="new-password" />
+            <button type="button" class="input-action" id="togglePwd">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <div id="pwdStrength" style="display:none;margin-top:6px">
+            <div style="height:4px;border-radius:99px;background:var(--clr-bg-elevated);overflow:hidden">
+              <div id="pwdBar" style="height:100%;border-radius:99px;transition:width 0.3s,background 0.3s;width:0%"></div>
+            </div>
+            <span id="pwdStrengthLabel" style="font-size:0.72rem;color:var(--clr-text-faint);margin-top:3px;display:block"></span>
+          </div>
+        </div>
+
+        <div id="registerError" class="field-error" style="display:none;text-align:center;font-size:0.85rem;padding:var(--sp-3);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r-md)"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="registerBtn">
+          Create account
+        </button>
+
+        <p style="font-size:0.75rem;color:var(--clr-text-faint);text-align:center;line-height:1.5">
+          By signing up you agree to our
+          <a href="#" style="color:var(--clr-brand-light)">Terms of Service</a> and
+          <a href="#" style="color:var(--clr-brand-light)">Privacy Policy</a>.
+        </p>
+      </form>
+
+      <div class="auth-form-footer">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { register, redirectIfAuthenticated } from '../src/js/auth/auth.js';
+  import { validateForm, rules } from '../src/js/utils/validator.js';
+  import { slugify } from '../src/js/utils/formatter.js';
+
+  redirectIfAuthenticated();
+
+  const form      = document.getElementById('registerForm');
+  const btn       = document.getElementById('registerBtn');
+  const errorBox  = document.getElementById('registerError');
+  const pwdInput  = document.getElementById('password');
+  const pwdBar    = document.getElementById('pwdBar');
+  const pwdLabel  = document.getElementById('pwdStrengthLabel');
+  const pwdBlock  = document.getElementById('pwdStrength');
+
+  // Toggle visibility
+  document.getElementById('togglePwd').addEventListener('click', () => {
+    pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+  });
+
+  // Password strength meter
+  pwdInput.addEventListener('input', () => {
+    const v = pwdInput.value;
+    if (!v) { pwdBlock.style.display = 'none'; return; }
+    pwdBlock.style.display = 'block';
+    let score = 0;
+    if (v.length >= 8)  score++;
+    if (v.length >= 12) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const levels = [
+      { w: '20%',  bg: '#f87171', label: 'Weak' },
+      { w: '40%',  bg: '#fbbf24', label: 'Fair' },
+      { w: '60%',  bg: '#fbbf24', label: 'Good' },
+      { w: '80%',  bg: '#34d399', label: 'Strong' },
+      { w: '100%', bg: '#34d399', label: 'Very strong' },
+    ];
+    const l = levels[Math.min(score - 1, 4)] || levels[0];
+    pwdBar.style.width      = l.w;
+    pwdBar.style.background = l.bg;
+    pwdLabel.textContent    = l.label;
+    pwdLabel.style.color    = l.bg;
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+
+    const schema = {
+      firstName: { el: document.getElementById('firstName'), rules: [rules.required] },
+      lastName:  { el: document.getElementById('lastName'),  rules: [rules.required] },
+      username:  { el: document.getElementById('username'),  rules: [rules.required, rules.minLen(3), rules.noSpaces] },
+      email:     { el: document.getElementById('email'),     rules: [rules.required, rules.email] },
+      password:  { el: document.getElementById('password'),  rules: [rules.required, rules.minLen(8)] },
+    };
+
+    const { valid } = validateForm(schema);
+    if (!valid) return;
+
+    btn.classList.add('btn-loading');
+    btn.textContent = 'Creating account';
+
+    try {
+      await register(
+        document.getElementById('firstName').value.trim(),
+        document.getElementById('lastName').value.trim(),
+        document.getElementById('username').value.trim().toLowerCase(),
+        document.getElementById('email').value.trim(),
+        document.getElementById('password').value
+      );
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      const fieldErrors = err.fieldErrors;
+      if (fieldErrors) {
+        Object.entries(fieldErrors).forEach(([field, msg]) => {
+          const el = document.getElementById(field);
+          if (el) {
+            el.classList.add('input-error');
+            const errEl = el.closest('.form-group').querySelector('.field-error')
+              || Object.assign(document.createElement('span'), { className: 'field-error' });
+            errEl.textContent = msg;
+            el.closest('.form-group').appendChild(errEl);
+          }
+        });
+      } else {
+        errorBox.textContent = err.message || 'Registration failed. Please try again.';
+        errorBox.style.display = 'block';
+      }
+    } finally {
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Create account';
+    }
+  });
+</script>
+
+</body>
+</html>
