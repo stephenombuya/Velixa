@@ -4,6 +4,17 @@
 
 Velixa is a production-grade microservices application demonstrating enterprise Java patterns: JWT authentication with token rotation, role-based access control, API Gateway rate-limiting, service discovery, and a dark-themed frontend SPA — all containerised with Docker Compose.
 
+<div>
+
+       <!-- Repository Analytics -->
+![GitHub repo size](https://img.shields.io/github/repo-size/stephenombuya/Velixa)
+![GitHub language count](https://img.shields.io/github/languages/count/stephenombuya/Velixa)
+![GitHub top language](https://img.shields.io/github/languages/top/stephenombuya/Velixa)
+![GitHub last commit](https://img.shields.io/github/last-commit/stephenombuya/Velixa)
+![GitHub contributors](https://img.shields.io/github/contributors/stephenombuya/Velixa)
+
+</div>
+
 ---
 
 ## Architecture Overview
