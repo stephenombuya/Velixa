@@ -6,7 +6,7 @@ Velixa is a production-grade microservices application demonstrating enterprise 
 
 <div>
 
-       <!-- Repository Analytics -->
+ <!-- Repository Analytics -->
 ![GitHub repo size](https://img.shields.io/github/repo-size/stephenombuya/Velixa)
 ![GitHub language count](https://img.shields.io/github/languages/count/stephenombuya/Velixa)
 ![GitHub top language](https://img.shields.io/github/languages/top/stephenombuya/Velixa)
